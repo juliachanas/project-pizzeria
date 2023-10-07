@@ -62,7 +62,8 @@
       thisProduct.data = data;
 
       thisProduct.renderInMenu();
-      console.log('newProduct: ', thisProduct);
+      thisProduct.getElements();
+      //console.log('newProduct: ', thisProduct);
       thisProduct.initAccordion();
     }
 
@@ -83,6 +84,26 @@
       menuContainer.appendChild(thisProduct.element);
     }
 
+    getElements() {
+      const thisProduct = this;
+
+      thisProduct.accordionTrigger = thisProduct.element.querySelector(
+        select.menuProduct.clickable
+      );
+      thisProduct.form = thisProduct.element.querySelector(
+        select.menuProduct.form
+      );
+      thisProduct.formInputs = thisProduct.form.querySelectorAll(
+        select.all.formInputs
+      );
+      thisProduct.cartButton = thisProduct.element.querySelector(
+        select.menuProduct.cartButton
+      );
+      thisProduct.priceElem = thisProduct.element.querySelector(
+        select.menuProduct.priceElem
+      );
+    }
+
     initAccordion() {
       const thisProduct = this;
 
@@ -90,16 +111,14 @@
       const clickableTrigger = thisProduct.element.querySelector(
         select.menuProduct.clickable
       );
-      console.log(clickableTrigger);
+      console.log('clik ', clickableTrigger);
 
       /* START: add event listener to clickable trigger on event click*/
       clickableTrigger.addEventListener('click', function (event) {
         event.preventDefault();
 
         /* find active product (product that has active class) */
-        const activeProduct = document.querySelector(
-          classNames.menuProduct.wrapperActive
-        );
+        const activeProduct = document.querySelector('.product.active'); //wazne jest uzycie odpowiedniej klasy!!!!!!
 
         /*if there is active product and it's not thisProduct.element, remove class active from it */
         if (activeProduct && activeProduct !== thisProduct.element) {
