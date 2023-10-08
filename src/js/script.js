@@ -104,23 +104,29 @@
       thisProduct.priceElem = thisProduct.element.querySelector(
         select.menuProduct.priceElem
       );
+      thisProduct.imageWrapper = thisProduct.element.querySelector(
+        select.menuProduct.imageWrapper
+      );
     }
 
     initAccordion() {
       const thisProduct = this;
 
       /* Find the clickable trigger (the element that should react to clicking))*/
-      const clickableTrigger = thisProduct.element.querySelector(
-        select.menuProduct.clickable
-      );
-      console.log('clik ', clickableTrigger);
+      // const clickableTrigger = thisProduct.element.querySelector( //TO JUZ JEST ZDEFINIOWANE W GETELEMENTS - NIE POTRZEBNE DWA RAZY
+      //   select.menuProduct.clickable
+      // );
+      // console.log('clik ', clickableTrigger);
 
       /* START: add event listener to clickable trigger on event click*/
-      clickableTrigger.addEventListener('click', function (event) {
+      thisProduct.accordionTrigger.addEventListener('click', function (event) {
         event.preventDefault();
 
         /* find active product (product that has active class) */
-        const activeProduct = document.querySelector('.product.active'); //wazne jest uzycie odpowiedniej klasy!!!!!!
+        //const activeProduct = document.querySelector('.product.active'); //wazne jest uzycie odpowiedniej klasy!!!!!!
+        const activeProduct = document.querySelector(
+          select.all.menuProductsActive
+        );
 
         /*if there is active product and it's not thisProduct.element, remove class active from it */
         if (activeProduct && activeProduct !== thisProduct.element) {
@@ -179,13 +185,32 @@
           //check if formData has param named 'paramId' and if it inludes optionId
           if (formData[paramId] && formData[paramId].includes(optionId)) {
             // check if option is not default
-            if (option.default === true) {
-              price = price + option.price; // increase price
+            if (!option.default) {
+              price += option.price; // increase price
+            }
+          } else {
+            // check if option is default
+            if (option.default) {
+              price -= option.price; //  decrease price
+            }
+          }
+
+          //find image class consist of two variables - paramId and optionId linked with "-"
+          const optionImage = thisProduct.imageWrapper.querySelector(
+            '.' + paramId + '-' + optionId
+          );
+          console.log('option image:', optionImage);
+
+          // check if image was found
+          const optionSelected =
+            formData[paramId] && formData[paramId].includes(optionId);
+          if (optionImage) {
+            //if option is selected add class "active" and make image visable using imageVisable
+            if (optionSelected) {
+              optionImage.classList.add(classNames.menuProduct.imageVisible);
             } else {
-              // check if option is default
-              if (option.default === false) {
-                price = price - option.price; //decrease price
-              }
+              // if option is not selected remove class "active" and make image invisible
+              optionImage.classList.remove(classNames.menuProduct.imageVisible);
             }
           }
         }
