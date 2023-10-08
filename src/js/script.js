@@ -302,8 +302,8 @@
         newValue <= maxValue
       ) {
         thisWidget.value = newValue;
-        thisWidget.input.value = thisWidget.value;
       }
+      thisWidget.input.value = thisWidget.value;
       this.announce();
     }
 
