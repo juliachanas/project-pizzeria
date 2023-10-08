@@ -199,7 +199,6 @@
           const optionImage = thisProduct.imageWrapper.querySelector(
             '.' + paramId + '-' + optionId
           );
-          console.log('option image:', optionImage);
 
           // check if image was found
           const optionSelected =
