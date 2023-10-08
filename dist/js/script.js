@@ -234,11 +234,14 @@
       thisProduct.amountWidget = new AmountWidget(thisProduct.amountWidgetElem);
 
       /* add listener on thisProduct.amountWidgetElem on 'updated' event */
-      thisProduct.amountWidgetElem.addEventListener('change', function (event) {
-        event.preventDefault();
+      thisProduct.amountWidgetElem.addEventListener(
+        'updated',
+        function (event) {
+          event.preventDefault();
 
-        thisProduct.processOrder();
-      });
+          thisProduct.processOrder();
+        }
+      );
     }
   }
 
@@ -249,13 +252,20 @@
       thisWidget.getElements(element);
 
       //utawienie wartosci poczatkowej dla ilosci
-      if (thisWidget.input.value) {
-        // jesli jest podana to wlacza metode setvalue z ta wartoscia
-        thisWidget.setValue(thisWidget.input.value);
-      } else {
-        // jesli nie to wlacza setvalue z wartoscia domyslna
-        thisWidget.setValue(settings.amountWidget.defaultValue);
-      }
+
+      // if (thisWidget.input.value) {
+      //   // jesli jest podana to wlacza metode setvalue z ta wartoscia
+      //   thisWidget.setValue(thisWidget.input.value);
+      // } else {
+      //   // jesli nie to wlacza setvalue z wartoscia domyslna
+      //   thisWidget.setValue(settings.amountWidget.defaultValue);
+      // }
+
+      /* sprawdza czy thisWidget.input.value ma prawdziwa wartośc to zostanie ona uzyta,
+      jest falszywe to zrealizuje sie tu co jest po LUB czyli przypisze wartosc domyslna z settings.amountWidget.defaultValue */
+      thisWidget.setValue(
+        thisWidget.input.value || settings.amountWidget.defaultValue
+      );
 
       thisWidget.initActions();
       console.log('AmountWidget:', thisWidget);
@@ -280,7 +290,7 @@
     setValue(value) {
       const thisWidget = this;
 
-      let newValue = parseInt(value); //parseInt zmienia tekst na liczbe - bo wwpisana zawsze jest tekstem!
+      const newValue = parseInt(value); //parseInt zmienia tekst na liczbe - bo wwpisana zawsze jest tekstem!
       const minValue = settings.amountWidget.defaultMin;
       const maxValue = settings.amountWidget.defaultMax;
 
@@ -292,8 +302,8 @@
         newValue <= maxValue
       ) {
         thisWidget.value = newValue;
+        thisWidget.input.value = thisWidget.value;
       }
-      thisWidget.input.value = thisWidget.value;
       this.announce();
     }
 
@@ -304,7 +314,7 @@
       thisWidget.input.addEventListener('change', function (event) {
         event.preventDefault();
 
-        thisWidget.setValue(thisWidget.value);
+        thisWidget.setValue(thisWidget.input.value);
       });
 
       /* add event listener to thisWidget.linkDecrease on event click */
