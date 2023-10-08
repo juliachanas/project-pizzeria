@@ -66,6 +66,7 @@
       //console.log('newProduct: ', thisProduct);
       thisProduct.initAccordion();
       thisProduct.initOrderForm();
+      thisProduct.initAmountWidget();
       thisProduct.processOrder();
     }
 
@@ -88,6 +89,11 @@
 
     getElements() {
       const thisProduct = this;
+
+      //[NEW]
+      thisProduct.amountWidgetElem = thisProduct.element.querySelector(
+        select.menuProduct.amountWidget
+      );
 
       thisProduct.accordionTrigger = thisProduct.element.querySelector(
         select.menuProduct.clickable
@@ -215,9 +221,111 @@
         }
       }
 
+      //NEW multiply price by amount
+      price *= thisProduct.amountWidget.value;
+
       // update calculated price in the HTML
       thisProduct.priceElem.innerHTML = price;
       console.log('price ', price);
+    }
+
+    initAmountWidget() {
+      const thisProduct = this;
+      thisProduct.amountWidget = new AmountWidget(thisProduct.amountWidgetElem);
+
+      /* add listener on thisProduct.amountWidgetElem on 'updated' event */
+      thisProduct.amountWidgetElem.addEventListener('change', function (event) {
+        event.preventDefault();
+
+        thisProduct.processOrder();
+      });
+    }
+  }
+
+  class AmountWidget {
+    constructor(element) {
+      const thisWidget = this;
+
+      thisWidget.getElements(element);
+
+      //utawienie wartosci poczatkowej dla ilosci
+      if (thisWidget.input.value) {
+        // jesli jest podana to wlacza metode setvalue z ta wartoscia
+        thisWidget.setValue(thisWidget.input.value);
+      } else {
+        // jesli nie to wlacza setvalue z wartoscia domyslna
+        thisWidget.setValue(settings.amountWidget.defaultValue);
+      }
+
+      thisWidget.initActions();
+      console.log('AmountWidget:', thisWidget);
+      console.log('constructor arguments', element);
+    }
+
+    getElements(element) {
+      const thisWidget = this;
+
+      thisWidget.element = element;
+      thisWidget.input = thisWidget.element.querySelector(
+        select.widgets.amount.input
+      );
+      thisWidget.linkDecrease = thisWidget.element.querySelector(
+        select.widgets.amount.linkDecrease
+      );
+      thisWidget.linkIncrease = thisWidget.element.querySelector(
+        select.widgets.amount.linkIncrease
+      );
+    }
+
+    setValue(value) {
+      const thisWidget = this;
+
+      let newValue = parseInt(value); //parseInt zmienia tekst na liczbe - bo wwpisana zawsze jest tekstem!
+      const minValue = settings.amountWidget.defaultMin;
+      const maxValue = settings.amountWidget.defaultMax;
+
+      /* ADD VALIDATION */
+      if (
+        thisWidget.value !== newValue &&
+        !isNaN(newValue) &&
+        newValue >= minValue &&
+        newValue <= maxValue
+      ) {
+        thisWidget.value = newValue;
+      }
+      thisWidget.input.value = thisWidget.value;
+      this.announce();
+    }
+
+    initActions() {
+      const thisWidget = this;
+
+      /* START: add event listener to thisWidget.input on event change*/
+      thisWidget.input.addEventListener('change', function (event) {
+        event.preventDefault();
+
+        thisWidget.setValue(thisWidget.value);
+      });
+
+      /* add event listener to thisWidget.linkDecrease on event click */
+      thisWidget.linkDecrease.addEventListener('click', function (event) {
+        event.preventDefault();
+
+        thisWidget.setValue(thisWidget.value - 1);
+      });
+
+      /* add event listener to thisWidget.linkIncrease on event click */
+      thisWidget.linkIncrease.addEventListener('click', function (event) {
+        event.preventDefault();
+
+        thisWidget.setValue(thisWidget.value + 1);
+      });
+    }
+
+    announce() {
+      const thisWidget = this;
+      const event = new Event('updated');
+      thisWidget.element.dispatchEvent(event);
     }
   }
 
