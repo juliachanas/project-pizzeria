@@ -418,7 +418,9 @@
 
     announce() {
       const thisWidget = this;
-      const event = new Event('updated');
+      const event = new CustomEvent('updated', {
+        bubbles: true, //emitowanie na elemencie i jego rodzicu, dziadku itd az do body, document i window
+      });
       thisWidget.element.dispatchEvent(event);
     }
   }
@@ -447,6 +449,14 @@
       thisCart.dom.productList = thisCart.dom.wrapper.querySelector(
         select.cart.productList
       );
+      thisCart.dom.deliveryFee = element.querySelector(select.cart.deliveryFee);
+      thisCart.dom.subtotalPrice = element.querySelector(
+        select.cart.subtotalPrice
+      );
+      thisCart.dom.totalPrice = element.querySelectorAll(
+        select.cart.totalPrice
+      );
+      thisCart.dom.totalNumber = element.querySelector(select.cart.totalNumber);
     }
     initActions() {
       const thisCart = this;
@@ -457,6 +467,14 @@
 
         /*toggle class in classNames.cart.wrapperActive on thisCart.dom.wrapper */
         thisCart.dom.wrapper.classList.toggle(classNames.cart.wrapperActive); //trzeba pamietac o dodaniu classList - inaczej nie zadziala, bo gdzie ma szukac
+      });
+
+      thisCart.dom.productList.addEventListener('updated', function () {
+        thisCart.update();
+      });
+
+      thisCart.dom.productList.addEventListener('remove', function (event) {
+        thisCart.remove(event.detail.cartProduct);
       });
     }
     add(menuProduct) {
@@ -470,6 +488,139 @@
       const generatedDOM = utils.createDOMFromHTML(generatedHTML);
 
       thisCart.dom.productList.appendChild(generatedDOM);
+
+      thisCart.products.push(new CartProduct(menuProduct, generatedDOM)); //TEGO NIE ROZUMIEM - POPROSIĆ O WYJAŚNIENIE
+      console.log('NEW CART PRODUCT', thisCart.products);
+
+      thisCart.update();
+    }
+    update() {
+      const thisCart = this;
+
+      let deliveryFee = settings.cart.defaultDeliveryFee; // delivery cost
+      console.log(deliveryFee);
+
+      let totalNumber = 0; //number of products
+      let subtotalPrice = 0;
+
+      for (const product of thisCart.products) {
+        totalNumber += product.amount;
+        subtotalPrice += product.price;
+      }
+      //check if products are in cart
+      if (totalNumber) {
+        //number of products is not falsy - cart is full
+
+        thisCart.totalPrice = subtotalPrice + deliveryFee; // total price
+        thisCart.dom.deliveryFee.innerHTML = deliveryFee;
+      } else {
+        thisCart.totalPrice = 0;
+      }
+
+      thisCart.dom.subtotalPrice.innerHTML = subtotalPrice;
+      thisCart.dom.totalNumber.innerHTML = totalNumber;
+      //thisCart.dom.totalPrice.innerHTML = thisCart.totalPrice;
+
+      console.log('total price:', thisCart.totalPrice);
+
+      for (const totalPrice of thisCart.dom.totalPrice) {
+        totalPrice.innerHTML = thisCart.totalPrice;
+      }
+    }
+    remove(product) {
+      const thisCart = this;
+
+      product.dom.wrapper.remove(); // usuwa element HTML z DOM reprezentujący produkt.
+
+      //znajdz indeks produktu w tablicy thisCart.products zeby okreslic JEGO POZYCJE i zapisz w zmiennej indexOfRemovedProduct
+      const indexOfRemovedProduct = thisCart.products.indexOf(product);
+
+      // usun produkt z tablicy thisCart.products - usuwa jeden element z tablicy uzywajac indeksu z indexOfRemovedProduct
+      thisCart.products.splice(indexOfRemovedProduct, 1);
+
+      thisCart.update();
+    }
+  }
+
+  class CartProduct {
+    constructor(menuProduct, element) {
+      const thisCartProduct = this;
+      //console.log(menuProduct);
+      thisCartProduct.id = menuProduct.id;
+      thisCartProduct.name = menuProduct.data;
+      thisCartProduct.amount = menuProduct.amount;
+      thisCartProduct.priceSingle = menuProduct.priceSingle;
+      thisCartProduct.price = menuProduct.priceSingle * menuProduct.amount;
+      thisCartProduct.params = menuProduct.params;
+
+      thisCartProduct.getElements(element);
+      thisCartProduct.amountWidget();
+      thisCartProduct.initActions();
+
+      //console.log('thisProduct:', thisCartProduct);
+    }
+    getElements(element) {
+      const thisCartProduct = this;
+      thisCartProduct.dom = {};
+      thisCartProduct.dom.wrapper = element;
+      thisCartProduct.dom.amountWidget =
+        thisCartProduct.dom.wrapper.querySelector(
+          select.cartProduct.amountWidget
+        );
+      thisCartProduct.dom.price = thisCartProduct.dom.wrapper.querySelector(
+        select.cartProduct.price
+      );
+      thisCartProduct.dom.edit = thisCartProduct.dom.wrapper.querySelector(
+        select.cartProduct.edit
+      );
+      thisCartProduct.dom.remove = thisCartProduct.dom.wrapper.querySelector(
+        select.cartProduct.remove
+      );
+    }
+    amountWidget() {
+      const thisCartProduct = this;
+      thisCartProduct.amountWidget = new AmountWidget(
+        thisCartProduct.dom.amountWidget
+      );
+
+      /* add listener */
+
+      thisCartProduct.dom.amountWidget.addEventListener(
+        'updated',
+        function (event) {
+          event.preventDefault();
+
+          thisCartProduct.amount = thisCartProduct.amountWidget.value;
+
+          thisCartProduct.price =
+            thisCartProduct.amountWidget.value * thisCartProduct.priceSingle;
+          thisCartProduct.dom.price.innerHTML = thisCartProduct.price;
+        }
+      );
+    }
+    remove() {
+      const thisCartProduct = this;
+
+      const event = new CustomEvent('remove', {
+        bubbles: true,
+        detail: {
+          cartProduct: thisCartProduct,
+        },
+      });
+      thisCartProduct.dom.wrapper.dispatchEvent(event);
+      console.log(thisCartProduct.dom.wrapper);
+    }
+
+    initActions() {
+      const thisCartProduct = this;
+
+      thisCartProduct.dom.edit.addEventListener('click', function (event) {
+        event.preventDefault();
+      });
+      thisCartProduct.dom.remove.addEventListener('click', function (event) {
+        event.preventDefault = this;
+        thisCartProduct.remove();
+      });
     }
   }
 
