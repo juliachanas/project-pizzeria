@@ -497,28 +497,26 @@
     update() {
       const thisCart = this;
 
-      let deliveryFee = settings.cart.defaultDeliveryFee; // delivery cost
-      console.log(deliveryFee);
+      thisCart.deliveryFee = settings.cart.defaultDeliveryFee; // delivery cost
+      //console.log(deliveryFee);
 
-      let totalNumber = 0; //number of products
-      let subtotalPrice = 0;
+      thisCart.totalNumber = 0; //number of products
+      thisCart.subtotalPrice = 0;
 
       for (const product of thisCart.products) {
-        totalNumber += product.amount;
-        subtotalPrice += product.price;
-      }
-      //check if products are in cart
-      if (totalNumber) {
-        //number of products is not falsy - cart is full
-
-        thisCart.totalPrice = subtotalPrice + deliveryFee; // total price
-        thisCart.dom.deliveryFee.innerHTML = deliveryFee;
-      } else {
-        thisCart.totalPrice = 0;
+        thisCart.totalNumber += product.amount;
+        thisCart.subtotalPrice += product.price;
       }
 
-      thisCart.dom.subtotalPrice.innerHTML = subtotalPrice;
-      thisCart.dom.totalNumber.innerHTML = totalNumber;
+      if (!thisCart.totalNumber) {
+        thisCart.deliveryFee = 0;
+      }
+
+      thisCart.totalPrice = thisCart.subtotalPrice + thisCart.deliveryFee; // total price
+      thisCart.dom.deliveryFee.innerHTML = thisCart.deliveryFee;
+
+      thisCart.dom.subtotalPrice.innerHTML = thisCart.subtotalPrice;
+      thisCart.dom.totalNumber.innerHTML = thisCart.totalNumber;
       //thisCart.dom.totalPrice.innerHTML = thisCart.totalPrice;
 
       console.log('total price:', thisCart.totalPrice);
