@@ -462,6 +462,9 @@
         select.cart.totalPrice
       );
       thisCart.dom.totalNumber = element.querySelector(select.cart.totalNumber);
+      thisCart.dom.form = element.querySelector(select.cart.form);
+      thisCart.dom.phone = element.querySelector(select.cart.phone);
+      thisCart.dom.address = element.querySelector(select.cart.address);
     }
     initActions() {
       const thisCart = this;
@@ -480,6 +483,12 @@
 
       thisCart.dom.productList.addEventListener('remove', function (event) {
         thisCart.remove(event.detail.cartProduct);
+      });
+
+      thisCart.dom.form.addEventListener('submit', function (event) {
+        event.preventDefault();
+
+        thisCart.sendOrder();
       });
     }
     add(menuProduct) {
@@ -542,6 +551,35 @@
       thisCart.products.splice(indexOfRemovedProduct, 1);
 
       thisCart.update();
+    }
+    sendOrder() {
+      const thisCart = this;
+      //adrs endpointu z ktorym chcemy sie polaczyc
+      const url = settings.db.url + '/' + settings.db.orders;
+      const payload = {
+        adress: thisCart.dom.address.value,
+        phone: thisCart.dom.phone.value,
+        totalPrice: thisCart.totalPrice,
+        subtotalPrice: thisCart.subtotalPrice,
+        totalNumber: thisCart.totalNumber,
+        deliveryFee: thisCart.deliveryFee,
+        products: [],
+      };
+
+      for (let product of thisCart.products) {
+        payload.products.push(product.getData());
+      }
+
+      console.log(payload);
+
+      const options = {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(payload),
+      };
+      fetch(url, options);
     }
   }
 
@@ -624,6 +662,20 @@
         event.preventDefault = this;
         thisCartProduct.remove();
       });
+    }
+    getData() {
+      const thisCartProduct = this;
+
+      const CartProductSum = {
+        id: thisCartProduct.id,
+        name: thisCartProduct.name,
+        amount: thisCartProduct.amount,
+        priceSingle: thisCartProduct.priceSingle,
+        price: thisCartProduct.price,
+        params: thisCartProduct.params,
+      };
+
+      return CartProductSum;
     }
   }
 
