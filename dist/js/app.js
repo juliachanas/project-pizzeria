@@ -2,8 +2,19 @@
 import { settings, select, classNames } from './settings.js'; //kropka i slash bardzo wazne - sciezka do pliku!
 import Product from './components/Product.js';
 import Cart from './components/Cart.js';
+import Booking from './components/Booking.js';
 
 const app = {
+  initBooking: function () {
+    const thisApp = this;
+
+    thisApp.bookingContainer = document.querySelector(
+      select.containerOf.booking
+    );
+
+    thisApp.booking = new Booking(thisApp.bookingContainer);
+  },
+
   initPages: function () {
     const thisApp = this;
     //wszystkie dzieci kontenera stron beda we wlasciwosci pages
@@ -62,6 +73,7 @@ const app = {
       );
     }
   },
+
   initMenu: function () {
     const thisApp = this;
     console.log('thisApp.data ', thisApp.data);
@@ -73,6 +85,7 @@ const app = {
       );
     }
   },
+
   initData: function () {
     const thisApp = this;
 
@@ -99,6 +112,7 @@ const app = {
 
     console.log('thisApp.data', JSON.stringify(thisApp.data));
   },
+
   initCart: function () {
     const thisApp = this;
 
@@ -124,6 +138,7 @@ const app = {
     thisApp.initData();
     //thisApp.initMenu();
     thisApp.initCart();
+    thisApp.initBooking();
   },
 };
 
