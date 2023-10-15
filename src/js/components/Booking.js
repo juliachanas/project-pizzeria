@@ -80,9 +80,6 @@ class Booking {
 
     thisBooking.datePicker = new DatePicker(thisBooking.dom.datePicker);
     thisBooking.hourPicker = new HourPicker(thisBooking.dom.hourPicker);
-
-    thisBooking.datePicker.init();
-    thisBooking.hourPicker.init();
   }
 }
 
