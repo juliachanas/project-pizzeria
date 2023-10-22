@@ -171,8 +171,24 @@
           background: $color-dark;
           opacity: 0.4;
         }
-  
       }
+      &.selected {
+        color: lighten($color-dark, 40%);
+  
+        &::after {
+          position: absolute;
+          content: '';
+          width: 100%;
+          height: 100%;
+          left: 0;
+          top: 0;
+          background: pink;
+          opacity: 0.4;
+        }
+      }
+    }
+  
+      
     }
   
     [data-table="1"] {
@@ -192,7 +208,6 @@
       right: 40px;
       top: 180px;
     }
-  }
   
   .booking-options {
     @include flex(row, flex-start, space-between);

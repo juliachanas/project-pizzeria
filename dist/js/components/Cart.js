@@ -65,7 +65,7 @@ class Cart {
   }
   add(menuProduct) {
     const thisCart = this;
-    console.log('adding product', menuProduct);
+    //console.log('adding product', menuProduct);
     /* generate HTML based on template */
 
     const generatedHTML = templates.cartProduct(menuProduct);
@@ -76,7 +76,7 @@ class Cart {
     thisCart.dom.productList.appendChild(generatedDOM);
 
     thisCart.products.push(new CartProduct(menuProduct, generatedDOM)); //TEGO NIE ROZUMIEM - POPROSIĆ O WYJAŚNIENIE
-    console.log('NEW CART PRODUCT', thisCart.products);
+    //console.log('NEW CART PRODUCT', thisCart.products);
 
     thisCart.update();
   }
@@ -105,7 +105,7 @@ class Cart {
     thisCart.dom.totalNumber.innerHTML = thisCart.totalNumber;
     //thisCart.dom.totalPrice.innerHTML = thisCart.totalPrice;
 
-    console.log('total price:', thisCart.totalPrice);
+    // console.log('total price:', thisCart.totalPrice);
 
     for (const totalPrice of thisCart.dom.totalPrice) {
       totalPrice.innerHTML = thisCart.totalPrice;
@@ -142,7 +142,7 @@ class Cart {
       payload.products.push(product.getData());
     }
 
-    console.log(payload);
+    //console.log(payload);
 
     const options = {
       method: 'POST',

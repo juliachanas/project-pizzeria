@@ -76,7 +76,7 @@ const app = {
 
   initMenu: function () {
     const thisApp = this;
-    console.log('thisApp.data ', thisApp.data);
+    // console.log('thisApp.data ', thisApp.data);
 
     for (let productData in thisApp.data.products) {
       new Product(
@@ -92,17 +92,14 @@ const app = {
     thisApp.data = {};
 
     const url = settings.db.url + '/' + settings.db.products;
-    console.log(url);
+    //console.log(url);
 
     fetch(url) /* polacz sie z url*/
       .then(function (rawResponse) {
         return rawResponse.json(); /*przekonwertuj na plik json */
       })
       .then(function (parsedResponse) {
-        console.log(
-          'parsedResponse',
-          parsedResponse
-        ); /*pokaz skonwertowane dane w konsoli*/
+        //console.log('parsedResponse',parsedResponse); /*pokaz skonwertowane dane w konsoli*/
 
         /* save parsedResponse at this.App.data.products */
         thisApp.data.products = parsedResponse;
@@ -110,7 +107,7 @@ const app = {
         thisApp.initMenu();
       });
 
-    console.log('thisApp.data', JSON.stringify(thisApp.data));
+    //console.log('thisApp.data', JSON.stringify(thisApp.data));
   },
 
   initCart: function () {
@@ -128,7 +125,7 @@ const app = {
 
   init: function () {
     const thisApp = this;
-    console.log('*** App starting ***');
+    //console.log('*** App starting ***');
     //console.log('thisApp:', thisApp);
     //console.log('classNames:', classNames);
     //console.log('settings:', settings);
