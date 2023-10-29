@@ -22,11 +22,25 @@ const app = {
     //znajdz wsyztskie linki
     thisApp.navLinks = document.querySelectorAll(select.nav.links);
 
+    thisApp.buttons = document.querySelectorAll('.item a');
+
+    //thisApp.bookingButton = document.querySelector('.item a[href="#booking"]');
+    // thisApp.navLinks = document.querySelectorAll('.main-nav a');
+
     const idFromhash = window.location.hash.replace('#/', '');
 
     //thisApp.activatePage(thisApp.pages[0].id); //wyswietlu sie pierwsza z podstron
 
+    for (let button of thisApp.buttons) {
+      button.addEventListener('click', function (event) {
+        event.preventDefault();
+        const targetPage = button.getAttribute('href').replace('#', '');
+        thisApp.activatePage(targetPage);
+        window.location.hash = '#/' + targetPage;
+      });
+    }
     let pageMatchingHash = thisApp.pages[0].id;
+    console.log(pageMatchingHash);
 
     for (let page of thisApp.pages) {
       if (page.id == idFromhash) {
@@ -52,6 +66,11 @@ const app = {
         window.location.hash = '#/' + id;
       });
     }
+    //NOWE
+    // thisApp.buttons.addEventListener('click', function (event) {
+    //   event.preventDefault();
+    //   thisApp.activatePage('pageId');
+    // });
   },
 
   activatePage: function (pageId) {
